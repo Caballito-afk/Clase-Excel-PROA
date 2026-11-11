@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio de Excel: El Kiosco ProA</title>
+    <style>
+        :root {
+            --primary: #1d6f42;
+            --primary-dark: #144d2e;
+            --secondary: #0078d4;
+            --bg: #f4f7f6;
+            --card: #ffffff;
+            --text: #2c3e50;
+            --accent: #e8f5e9;
+            --border: #d1d5db;
+            --locked: #9ca3af;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 30px 25px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.05rem;
+        }
+
+        .progress-container {
+            background: var(--card);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .progress-bar-wrapper {
+            flex-grow: 1;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 16px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background-color: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: var(--primary-dark);
+            white-space: nowrap;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--card);
+            border: 2px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .tab-btn.disabled {
+            background: #e5e7eb;
+            color: var(--locked);
+            border-color: #d1d5db;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary);
+            display: none;
+        }
+
+        .card.active-tab {
+            display: block;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1.3rem;
+        }
+
+        .badge {
+            background-color: var(--accent);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist li {
+            margin: 12px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .checklist input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .checklist label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checklist input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .new-column {
+            background-color: #e8f5e9 !important;
+            border: 2px solid var(--primary) !important;
+            font-weight: bold;
+        }
+
+        .help-toggle {
+            background-color: #eef6fc;
+            color: var(--secondary);
+            border: 1px solid #bde0fe;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        .help-toggle:hover {
+            background-color: #d0e8fc;
+        }
+
+        .help-content {
+            display: none;
+            background-color: #f0f7ff;
+            border-left: 4px solid var(--secondary);
+            padding: 12px 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .nav-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .nav-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .alert-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            color: #856404;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Planilla Progresiva: Sistema del Kiosco Escolar</h1>
+            <p>Trabaja sobre un mismo archivo de Excel en 5 etapas lógicas y acumulativas</p>
+        </header>
+
+        <!-- Barra de Progreso General -->
+        <div class="progress-container">
+            <div class="progress-text">Progreso del Kiosco: <span id="progress-val">0%</span></div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Pestañas de Navegación por Etapas -->
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-btn-0" onclick="switchTab(0)">
+                <span>Etapa 1: Inventario Inicial</span>
+            </button>
+            <button class="tab-btn disabled" id="tab-btn-1" onclick="switchTab(1)">
+                <span>🔒 Etapa 2: Total del Inventario</span>
+            </button>
+            <button class="tab-btn disabled" id="tab-btn-2" onclick="switchTab(2)">
+                <span>🔒 Etapa 3: Estado de Stock</span>
+            </button>
+            <button class="tab-btn disabled" id="tab-btn-3" onclick="switchTab(3)">
+                <span>🔒 Etapa 4: Resumen & Indicadores</span>
+            </button>
+            <button class="tab-btn disabled" id="tab-btn-4" onclick="switchTab(4)">
+                <span>🔒 Etapa 5: Buscador</span>
+            </button>
+        </div>
+
+        <!-- ETAPA 1 -->
+        <div class="card active-tab" id="card-0">
+            <h2>
+                <span>Etapa 1: Armado de la Planilla de Inventario</span>
+                <span class="badge">Estructura Inicial</span>
+            </h2>
+            <div class="alert-box">
+                📌 <strong>Instrucciones:</strong> Abre Excel y crea una nueva hoja llamada <code>"Gestión Kiosco"</code>. Ingresa los datos base.
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Stock Actual</th>
+                        <th>Precio Costo ($)</th>
+                        <th>Precio Venta ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Alfa. de Dulce de Leche</td><td>Golosinas</td><td>45</td><td>400</td><td>800</td></tr>
+                    <tr><td>Gaseosa 500ml</td><td>Bebidas</td><td>18</td><td>700</td><td>1300</td></tr>
+                    <tr><td>Empanada de Carne</td><td>Comida</td><td>8</td><td>600</td><td>1100</td></tr>
+                    <tr><td>Paquete de Galletitas</td><td>Snacks</td><td>30</td><td>500</td><td>950</td></tr>
+                    <tr><td>Agua Mineral 500ml</td><td>Bebidas</td><td>5</td><td>350</td><td>700</td></tr>
+                    <tr><td>Chupetín de Fruta</td><td>Golosinas</td><td>60</td><td>100</td><td>250</td></tr>
+                    <tr><td>Sándwich de Jamón y Queso</td><td>Comida</td><td>4</td><td>900</td><td>1600</td></tr>
+                </tbody>
+            </table>
+
+            <ul class="checklist">
+                <li>
+                    <input type="checkbox" id="t1-1" onchange="updateStep(0)">
+                    <label for="t1-1">Copiar la tabla con los 7 productos en la hoja de Excel.</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="t1-2" onchange="updateStep(0)">
+                    <label for="t1-2">Aplicar formato de <strong>Moneda ($)</strong> a las columnas <em>Precio Costo</em> y <em>Precio Venta</em>.</label>
+                </li>
+            </ul>
+
+            <div class="help-toggle" onclick="toggleHelp('help-1')">💡 Pista de Ayuda</div>
+            <div class="help-content" id="help-1">
+                Selecciona las celdas numéricas de precio y haz clic en el icono <code>$</code> dentro de la pestaña <strong>Inicio &gt; Número</strong>.
+            </div>
+
+            <div class="nav-buttons">
+                <div></div>
+                <button class="nav-btn" id="next-btn-0" disabled onclick="switchTab(1)">Completar Etapa 1 para Continuar &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 2 -->
+        <div class="card" id="card-1">
+            <h2>
+                <span>Etapa 2: Incorporar Valor de Inventario y Ganancia</span>
+                <span class="badge">Operaciones (+) (-) (*)</span>
+            </h2>
+            <div class="alert-box">
+                📌 <strong>Ampliación de la planilla:</strong> Agrega 2 columnas a la derecha de tu tabla actual: <code>Valor Total Stock ($)</code> y <code>Ganancia Unitario ($)</code>.
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>...</th>
+                        <th>Precio Venta ($)</th>
+                        <th class="new-column">Valor Total Stock ($)</th>
+                        <th class="new-column">Ganancia Unitario ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Alfa. de Dulce de Leche</td><td>...</td><td>800</td><td class="new-column">= Stock * P. Venta</td><td class="new-column">= P. Venta - P. Costo</td></tr>
+                    <tr><td>Gaseosa 500ml</td><td>...</td><td>1300</td><td class="new-column">...</td><td class="new-column">...</td></tr>
+                </tbody>
+            </table>
+
+            <ul class="checklist">
+                <li>
+                    <input type="checkbox" id="t2-1" onchange="updateStep(1)">
+                    <label for="t2-1">Insertar la columna <strong>Valor Total Stock</strong> y calcularla multiplicando el <em>Stock Actual</em> por el <em>Precio Venta</em> (ej: <code>=C2*E2</code>).</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="t2-2" onchange="updateStep(1)">
+                    <label for="t2-2">Insertar la columna <strong>Ganancia Unitario</strong> y calcularla restando el <em>Precio Venta</em> menos el <em>Precio Costo</em> (ej: <code>=E2-D2</code>).</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="t2-3" onchange="updateStep(1)">
+                    <label for="t2-3">Copiar las fórmulas hacia abajo para completar los 7 productos.</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="t2-4" onchange="updateStep(1)">
+                    <label for="t2-4">Al final de la tabla, usar la función <code>=SUMA()</code> para calcular el valor total invertido en el kiosco.</label>
+                </li>
+            </ul>
+
+            <div class="help-toggle" onclick="toggleHelp('help-2')">💡 Pista de Ayuda</div>
+            <div class="help-content" id="help-2">
+                Usa el controlador de relleno (el cuadrado verde abajo a la derecha de la celda) para arrastrar la fórmula rápidamente.
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="switchTab(0)">&larr; Volver</button>
+                <button class="nav-btn" id="next-btn-1" disabled onclick="switchTab(2)">Completar Etapa 2 para Continuar &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 3 -->
+        <div class="card" id="card-2">
+            <h2>
+                <span>Etapa 3: Control Automático de Reabastecimiento</span>
+                <span class="badge">Función SI & Formato Condicional</span>
+            </h2>
+            <div class="alert-box">
+                📌 <strong>Ampliación de la planilla:</strong> Añade la columna <code>Estado Reposición</code> a la derecha para detectar productos con bajo stock.
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Stock Actual</th>
+                        <th>...</th>
+                        <th class="new-column">Estado Reposición</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Alfa. de Dulce de Leche</td><td>45</td><td>...</td><td class="new-column">OK</td></tr>
+                    <tr><td>Agua Mineral 500ml</td><td>5</td><td>...</td><td class="new-column">REPONER URGENTE</td></tr>
+                </tbody>
+            </table>
+
+            <ul class="checklist">
+                <li>
+                    <input type="checkbox" id="t3-1" onchange="updateStep(2)">
+                    <label for="t3-1">Agregar la columna <strong>Estado Reposición</strong> al final de la tabla.</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="t3-2" onchange="updateStep(2)">
+                    <label for="t3-2">Usar la función condicional: si el <em>Stock Actual</em> es menor o igual a 10 mostrar <strong>"REPONER URGENTE"</strong>, en caso contrario mostrar <strong>"OK"</strong>.</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="t3-3" onchange="updateStep(2)">
+                    <label for="t3-3">Aplicar un <strong>Formato Condicional</strong>: pintar la celda de color rojo claro si dice "REPONER URGENTE" y verde claro si dice "OK".</label>
+                </li>
+            </ul>
+
+            <div class="help-toggle" onclick="toggleHelp('help-3')">💡 Pista de Ayuda</div>
+            <div class="help-content" id="help-3">
+                <strong>Sintaxis:</strong> <code>=SI(C2<=10; "REPONER URGENTE"; "OK")</code>.<br>
+                Para el color: selecciona la columna &gt; <em>Formato Condicional &gt; Reglas para resaltar celdas &gt; Es igual a...</em>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="switchTab(1)">&larr; Volver</button>
+                <button class="nav-btn" id="next-btn-2" disabled onclick="switchTab(3)">Completar Etapa 3 para Continuar &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 4 -->
+        <div class="card" id="card-3">
+            <h2>
+                <span>Etapa 4: Panel Estadístico del Kiosco</span>
+                <span class="badge">CONTAR.SI</span>
+            </h2>
+            <div class="alert-box">
+                📌 <strong>Ampliación de la planilla:</strong> Crea un panel pequeño de indicadores debajo de tu tabla principal para cuantificar estados.
+            </div>
+
+            <ul class="checklist">
+                <li>
+                    <input type="checkbox" id="t4-1" onchange="updateStep(3)">
+                    <label for="t4-1">En el resumen inferior, calcular la cantidad de artículos a reponer mediante <code>=CONTAR.SI(rango_estado; "REPONER URGENTE")</code>.</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="t4-2" onchange="updateStep(3)">
+                    <label for="t4-2">Calcular la cantidad de artículos en estado "OK" mediante <code>=CONTAR.SI(rango_estado; "OK")</code>.</label>
+                </li>
+            </ul>
+
+            <div class="help-toggle" onclick="toggleHelp('help-4')">💡 Pista de Ayuda</div>
+            <div class="help-content" id="help-4">
+                La función <code>CONTAR.SI</code> evalúa un rango y cuenta cuántas veces aparece exactamente el texto especificado.
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="switchTab(2)">&larr; Volver</button>
+                <button class="nav-btn" id="next-btn-3" disabled onclick="switchTab(4)">Completar Etapa 4 para Continuar &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 5 -->
+        <div class="card" id="card-4">
+            <h2>
+                <span>Etapa 5: Buscador Automático de Precios</span>
+                <span class="badge">Función BUSCARV</span>
+            </h2>
+            <div class="alert-box">
+                📌 <strong>Ampliación final:</strong> Construye una pequeña caja de consulta arriba a la derecha de la planilla para atender clientes rápido.
+            </div>
+
+            <table style="width: auto; margin-bottom: 20px;">
+                <tr>
+                    <th colspan="2" style="background-color: var(--secondary); color: white;">Consulta de Precios Rápida</th>
+                </tr>
+                <tr>
+                    <td><strong>Escribir Producto:</strong></td>
+                    <td><code>Gaseosa 500ml</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Precio a Cobrar ($):</strong></td>
+                    <td class="new-column"><code>=BUSCARV(...)</code></td>
+                </tr>
+            </table>
+
+            <ul class="checklist">
+                <li>
+                    <input type="checkbox" id="t5-1" onchange="updateStep(4)">
+                    <label for="t5-1">Diseñar la casilla de búsqueda arriba de la planilla (con una celda para ingresar el producto y otra para el resultado).</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="t5-2" onchange="updateStep(4)">
+                    <label for="t5-2">Programar en la celda del resultado la función <code>=BUSCARV()</code> para extraer de la tabla el <em>Precio Venta</em> del producto consultado.</label></li>
+                <li>
+                    <input type="checkbox" id="t5-3" onchange="updateStep(4)">
+                    <label for="t5-3">Verificar ingresando distintos productos (ej: "Alfa. de Dulce de Leche" o "Empanada de Carne") y comprobar que el precio cambie solo.</label>
+                </li>
+            </ul>
+
+            <div class="help-toggle" onclick="toggleHelp('help-5')">💡 Pista de Ayuda</div>
+            <div class="help-content" id="help-5">
+                <strong>Estructura:</strong> <code>=BUSCARV(celda_con_nombre_buscado; rango_de_toda_la_tabla; numero_columna_precio_venta; FALSO)</code>.
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="switchTab(3)">&larr; Volver</button>
+                <div></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Planilla Progresiva Kiosco Escolar - Escuela ProA | Orientación en TIC</p>
+        </footer>
+    </div>
+
+    <script>
+        const completedSteps = [false, false, false, false, false];
+
+        function switchTab(index) {
+            if (index > 0 && !completedSteps[index - 1]) {
+                alert("⚠️ Para acceder a esta etapa primero debes completar todas las consignas de la etapa anterior.");
+                return;
+            }
+
+            const cards = document.querySelectorAll('.card');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            cards.forEach((card, i) => {
+                card.classList.toggle('active-tab', i === index);
+            });
+
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleHelp(id) {
+            const content = document.getElementById(id);
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function updateStep(stepIndex) {
+            const currentCard = document.getElementById(`card-${stepIndex}`);
+            const checkboxes = currentCard.querySelectorAll('input[type="checkbox"]');
+            let allChecked = true;
+
+            checkboxes.forEach(cb => {
+                if (!cb.checked) allChecked = false;
+            });
+
+            completedSteps[stepIndex] = allChecked;
+
+            const nextBtn = document.getElementById(`next-btn-${stepIndex}`);
+            if (nextBtn) {
+                nextBtn.disabled = !allChecked;
+                if (allChecked) {
+                    nextBtn.innerText = "¡Etapa Completada! Ir a la Siguiente →";
+                } else {
+                    nextBtn.innerText = "Completar Etapa para Continuar →";
+                }
+            }
+
+            if (stepIndex + 1 < 5) {
+                const nextTabBtn = document.getElementById(`tab-btn-${stepIndex + 1}`);
+                if (allChecked) {
+                    nextTabBtn.classList.remove('disabled');
+                    nextTabBtn.querySelector('span').innerText = getTabTitle(stepIndex + 1);
+                }
+            }
+
+            updateGlobalProgress();
+        }
+
+        function getTabTitle(index) {
+            const titles = [
+                "Etapa 1: Inventario Inicial",
+                "Etapa 2: Total del Inventario",
+                "Etapa 3: Estado de Stock",
+                "Etapa 4: Resumen & Indicadores",
+                "Etapa 5: Buscador"
+            ];
+            return titles[index];
+        }
+
+        function updateGlobalProgress() {
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            const total = allCheckboxes.length;
+            let checked = 0;
+
+            allCheckboxes.forEach(cb => {
+                if (cb.checked) checked++;
+            });
+
+            const percentage = Math.round((checked / total) * 100);
+            document.getElementById('progress-val').innerText = percentage + '%';
+            document.getElementById('progress-fill').style.width = percentage + '%';
+        }
+    </script>
+</body>
+</html>
